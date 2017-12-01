@@ -153,7 +153,7 @@
             this.addToDormDialogVisible = false
             this.loadData()
           } else {
-            this.$message.error('Operation failed')
+            this.$message.error('Operation failed. Maybe the bed is occupied.')
             this.addToDormDialogVisible = false
             this.loadData()
           }

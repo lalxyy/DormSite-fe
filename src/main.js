@@ -7,6 +7,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
+import qs from 'qs'
 
 Vue.config.productionTip = false
 
@@ -14,8 +15,10 @@ Vue.use(ElementUI)
 Vue.use(Vuex)
 
 Vue.prototype.$axios = axios.create({
-  baseURL: ''
+  baseURL: 'http://localhost:8080/',
+  withCredentials: true
 })
+Vue.prototype.$qs = qs
 
 /* eslint-disable no-new */
 new Vue({

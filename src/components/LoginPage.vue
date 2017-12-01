@@ -16,10 +16,10 @@
           <el-select placeholder="Type..." v-model="loginForm.type"
                      style="width: 100%">
             <el-option label="System Administrator"
-                       value="System Administrator"></el-option>
-            <el-option label="Instructor" value="Instructor"></el-option>
+                       value="systemAdministrator"></el-option>
+            <el-option label="Instructor" value="instructor"></el-option>
             <el-option label="Dormitory Staff"
-                       value="Dormitory Staff"></el-option>
+                       value="dormitoryStaff"></el-option>
           </el-select>
         </el-form-item>
         <!--<el-form-item>-->
@@ -49,13 +49,19 @@
     },
     methods: {
       submitLoginForm () {
-        if (this.loginForm.username === 'admin' &&
-          this.loginForm.password === '111') {
-          this.$message.success('Signed in Successfully')
-//          this.$router.push({name: 'homepage'})
-        } else {
-          this.$message.error('Username or password incorrect')
-        }
+        let params = new URLSearchParams()
+        params.append('account', this.loginForm.username)
+        params.append('password', this.loginForm.password)
+        params.append('type', this.loginForm.type)
+        this.$axios.post('/user/authorize', params).then(response => {
+          if (response.data.status === 'success') {
+            this.$message.success('Signed in Successfully')
+            this.$router.push({ path: '/manage' })
+          } else {
+            this.$message.error('Username or password incorrect')
+            window.console.log(response.data)
+          }
+        })
       },
     },
   }

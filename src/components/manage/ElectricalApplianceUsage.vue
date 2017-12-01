@@ -29,7 +29,7 @@
           {{record.roomName}}
         </el-form-item>
         <el-form-item label="Situation">
-          <el-input :model="updateForm.newSituation" placeholder="New Situation..."></el-input>
+          <el-input v-model="updateForm.newSituation" placeholder="New Situation..."></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="el-dialog__footer">
@@ -50,7 +50,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="Situation">
-          <el-input :model="addForm.situation" placeholder="Situation..."></el-input>
+          <el-input v-model="addForm.situation" placeholder="Situation..."></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="el-dialog__footer">
@@ -111,6 +111,7 @@
           } else {
             this.$message.error('Operation Failed')
           }
+          this.updateV = false
           this.loadData()
         })
       },
@@ -123,7 +124,7 @@
 
         this.$axios.post('/electrical-appliance/add', this.$qs.stringify({
           studentId: this.addForm.studentId,
-          situation: this.addForm.situation,
+          newSituation: this.addForm.situation,
           date: dateString
         })).then(response => {
           window.console.log(response.data)
@@ -132,6 +133,7 @@
           } else {
             this.$message.error('Operation Failed')
           }
+          this.addV = false
           this.loadData()
         })
       }

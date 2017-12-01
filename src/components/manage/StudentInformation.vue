@@ -30,7 +30,7 @@
                        width="100"></el-table-column>
       <el-table-column label="Gender" prop="gender"
                        width="100"></el-table-column>
-      <el-table-column label="Room" prop="roomId" width="100"></el-table-column>
+      <el-table-column label="Room" prop="roomName" width="100"></el-table-column>
       <el-table-column label="Bed Number" prop="bed"
                        width="200"></el-table-column>
       <el-table-column label="Class Number" prop="classNumber"
@@ -42,7 +42,7 @@
                        width="200"></el-table-column>
     </el-table>
     <el-dialog title="Add Student to Room"
-               :visible.sync="removeFromDormDialogVisible"
+               :visible.sync="addToDormDialogVisible"
                style="text-align: left">
       <el-form ref="addForm" :model="addForm" label-width="80px">
         <el-form-item label="Room">
@@ -57,10 +57,10 @@
           <el-input v-model="addForm.bedIds[index]"
                     placeholder="0 to ..."></el-input>
         </el-form-item>
-        <span slot="footer" class="el-dialog__footer">
-          <el-button type="primary" @click="addToDorm()">Submit</el-button>
-        </span>
       </el-form>
+      <span slot="footer" class="el-dialog__footer">
+        <el-button type="primary" @click="addToDorm()">Submit</el-button>
+      </span>
     </el-dialog>
 
     <el-dialog title="Remove Students from Room"
@@ -124,13 +124,14 @@
       },
       openAddToDormDialog () {
         for (let i = 0; i < this.selections.length; ++i) {
-          if (this.records[i].roomId) {
+          if (this.selections[i].roomId) {
             this.$message.error(
               'Some students already belong to rooms. Remove them from rooms first to add them to another room.')
             return
           }
           this.addForm.bedIds.push('')
         }
+        window.console.log('open add to dorm')
         this.addToDormDialogVisible = true
       },
       addToDorm () {
@@ -146,6 +147,7 @@
           bedIds: bedString,
           roomId: this.addForm.selectedRoomId,
         })).then(response => {
+          window.console.log(response.data)
           if (response.data.status === 'success') {
             this.$message.success('Operation finished')
             this.addToDormDialogVisible = false
@@ -157,6 +159,38 @@
           }
         })
       },
+      removeFromDorm () {
+        let studentIds = []
+        for (let i = 0; i < this.selections.length; ++i) {
+          studentIds.push(this.selections[i].id)
+        }
+        let roomIds = []
+        for (let i = 0; i < this.selections.length; ++i) {
+          if (!this.selections[i].roomId) {
+            this.$message.error('You can only remove students within rooms.')
+          }
+          roomIds.push(this.selections[i].roomId)
+        }
+        let studentString = studentIds.join(',')
+        let roomString = roomIds.join(',')
+        window.console.log(studentString)
+        window.console.log(roomString)
+
+        this.$axios.post('/students/remove', this.$qs.stringify({
+          studentId: studentString,
+          roomId: roomString
+        })).then(response => {
+          if (response.data.status === 'success') {
+            this.$message.success('Operation finished')
+            this.removeFromDormDialogVisible = false
+            this.loadData()
+          } else {
+            this.$message.error('Operation failed')
+            this.removeFromDormDialogVisible = false
+            this.loadData()
+          }
+        })
+      }
     },
     computed: {
       getDisabled () {
